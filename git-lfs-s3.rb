@@ -54,7 +54,14 @@ module GitLfsS3
     end
 
     post '/verify', provides: 'application/vnd.git-lfs+json' do
+      data = MultiJson.load(request.body.tap { |b| b.rewind }.read)
+      object = object_data(data['oid'])
 
+      if object.exists? && object.size == data['size']
+        status 200
+      else
+        status 404
+      end
     end
   end
 end

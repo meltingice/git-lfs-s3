@@ -29,7 +29,7 @@ module GitLfsS3
     end
 
     def server_url
-      ENV['SERVER_URL']
+      ENV['LFS_SERVER_URL']
     end
 
     # before do

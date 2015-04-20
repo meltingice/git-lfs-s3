@@ -14,7 +14,7 @@ Currently, all configuration is done via environment variables. All configuratio
 * `AWS_ACCESS_KEY_ID` - your AWS access key.
 * `AWS_SECRET_ACCESS_KEY` - your AWS secret key.
 * `S3_BUCKET` - the bucket you wish to use for LFS storage. While not required, I recommend using a dedicated bucket for this.
-* `SERVER_URL` - the URL where this server can be reached; needed to fetch download URLs.
+* `LFS_SERVER_URL` - the URL where this server can be reached; needed to fetch download URLs.
 
 ### Git Setup
 
@@ -39,5 +39,6 @@ mount GitLfsS3::Application => '/lfs'
 
 ## TODO
 
-* Git authentication
+* Authentication
 * Cloudfront support
+* Config via file or API

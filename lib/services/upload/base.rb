@@ -21,7 +21,7 @@ module GitLfsS3
       private
 
       def server_url
-        ENV['SERVER_URL']
+        ENV['LFS_SERVER_URL']
       end
     end
   end

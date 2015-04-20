@@ -14,6 +14,17 @@ Currently, all configuration is done via environment variables. All configuratio
 * `S3_BUCKET` - the bucket you wish to use for LFS storage. While not required, I recommend using a dedicated bucket for this.
 * `SERVER_URL` - the URL where this server can be reached; needed to fetch download URLs.
 
+### Git Setup
+
+If you are unfamiliar with Git LFS, you can configure your Git client to use this server by creating a `.gitconfig` file in the root of your repository and adding this config, but with your server address:
+
+``` git
+[lfs]
+    url = "http://yourserver.com"
+```
+
+Once that is done, you can tell Git LFS to track files with `git lfs track "*.psd"`, for example.
+
 ## Running
 
 This repository includes a Procfile. If you have `foreman` installed, simply run `foreman start`.

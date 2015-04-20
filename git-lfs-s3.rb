@@ -1,3 +1,4 @@
+require 'logger'
 require 'sinatra/base'
 require 'aws-sdk'
 require 'multi_json'
@@ -7,7 +8,25 @@ Dir['./lib/**/*.rb'].each { |f| require f }
 module GitLfsS3
   class Application < Sinatra::Application
     include AwsHelpers
-    set :sessions, false
+
+    configure do
+      disable :sessions
+      enable :logging
+
+      Dir.mkdir('logs') unless Dir.exists?('logs')
+      $logger = Logger.new("logs/#{settings.environment}.log", "weekly")
+      $logger.level = Logger::INFO
+    end
+
+    configure :development do
+      $logger.level = Logger::DEBUG
+    end
+
+    helpers do
+      def logger
+        $logger
+      end
+    end
 
     def server_url
       ENV['SERVER_URL']
@@ -48,6 +67,8 @@ module GitLfsS3
 
     post "/objects", provides: 'application/vnd.git-lfs+json' do
       service = UploadService.service_for(request.body)
+      logger.debug service.response
+      logger.debug service.to_curl
       
       status service.status
       body MultiJson.dump(service.response)

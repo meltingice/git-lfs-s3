@@ -4,6 +4,8 @@ A [Git LFS](https://git-lfs.github.com/) server that stores your large Git files
 
 It works by generating a presigned URL that the Git LFS client can use to upload directly to S3. It also provides download URLs that allow Git clients to download directly from S3. No data is proxied through the Git LFS server.
 
+**Note:** the current version does not implement any authentication yet, so use with caution. Authentication will be added soon.
+
 ## Configuration
 
 Currently, all configuration is done via environment variables. All configuration variables must be set.

@@ -63,5 +63,4 @@ mount GitLfsS3::Application => '/lfs'
 
 ## TODO
 
-* Authentication
 * Cloudfront support

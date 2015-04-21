@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require "rubygems"
+require "logger"
 require "git-lfs-s3"
 
 GitLfsS3::Application.set :aws_region, ENV['AWS_REGION']
@@ -8,6 +9,11 @@ GitLfsS3::Application.set :aws_access_key_id, ENV['AWS_ACCESS_KEY_ID']
 GitLfsS3::Application.set :aws_secret_access_key, ENV['AWS_SECRET_ACCESS_KEY']
 GitLfsS3::Application.set :s3_bucket, ENV['S3_BUCKET']
 GitLfsS3::Application.set :server_url, ENV['LFS_SERVER_URL']
+GitLfsS3::Application.set :logger, Logger.new(STDOUT)
+
+GitLfsS3::Application.on_authenticate do |username, password|
+  username == ENV['USERNAME'] && password == ENV['PASSWORD']
+end
 
 Rack::Handler::WEBrick.run(
   GitLfsS3::Application.new,

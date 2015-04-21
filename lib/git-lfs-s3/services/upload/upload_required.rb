@@ -23,17 +23,6 @@ module GitLfsS3
         202
       end
 
-      def to_curl
-        curl = ["curl -XPUT"]
-        curl << "-T \"{{file}}\""
-        upload_headers.each do |k, v|
-          curl << "-H \"#{k}: #{v}\""
-        end
-        curl << upload_destination
-
-        curl.join(' ')
-      end
-
       private
 
       def upload_destination

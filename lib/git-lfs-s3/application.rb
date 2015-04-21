@@ -2,31 +2,52 @@ module GitLfsS3
   class Application < Sinatra::Application
     include AwsHelpers
 
+    class << self
+      attr_reader :auth_callback
+
+      def on_authenticate(&block)
+        @auth_callback = block
+      end
+
+      def authentication_enabled?
+        !auth_callback.nil?
+      end
+
+      def perform_authentication(username, password)
+        auth_callback.call(username, password)
+      end
+    end
+
     configure do
       disable :sessions
       enable :logging
-
-      Dir.mkdir('logs') unless Dir.exists?('logs')
-      $logger = Logger.new("logs/#{settings.environment}.log", "weekly")
-      $logger.level = Logger::INFO
-    end
-
-    configure :development do
-      $logger.level = Logger::DEBUG
     end
 
     helpers do
       def logger
-        $logger
+        settings.logger
       end
     end
 
-    # before do
-    #   raise headers['Accept'].inspect
-    #   if headers['Accept'] != 'application/vnd.git-lfs+json'
-    #     halt 406, {'Content-Type' => 'text/plain'}, 'Server only accepts application/vnd.git-lfs+json'
-    #   end
-    # end
+    def authorized?
+      @auth ||=  Rack::Auth::Basic::Request.new(request.env)
+      @auth.provided? && @auth.basic? && @auth.credentials && self.class.auth_callback.call(
+        @auth.credentials[0], @auth.credentials[1]
+      )
+    end
+
+    def protected!
+      unless authorized?
+        response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+        throw(:halt, [401, "Invalid username or password"])
+      end
+    end
+
+    before { protected! }
+
+    get '/' do
+      "Git LFS S3 is online."
+    end
 
     get "/objects/:oid", provides: 'application/vnd.git-lfs+json' do
       object = object_data(params[:oid])
@@ -58,7 +79,6 @@ module GitLfsS3
       logger.debug headers.inspect
       service = UploadService.service_for(request.body)
       logger.debug service.response
-      logger.debug service.to_curl
       
       status service.status
       body MultiJson.dump(service.response)

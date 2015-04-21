@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    psd (0.0.1)
+    git-lfs-s3 (0.0.1)
       aws-sdk (~> 2)
       multi_json
       sinatra
@@ -35,5 +35,5 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  psd!
+  git-lfs-s3!
   rake

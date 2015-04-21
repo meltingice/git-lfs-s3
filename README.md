@@ -24,7 +24,7 @@ gem 'git-lfs-s3'
 
 ### Standalone
 
-All configuration is done via environment variables. All of the configuration variables must be set.
+All configuration is done via environment variables. All of these configuration variables must be set.
 
 * `AWS_REGION` - the region where your S3 bucket is.
 * `AWS_ACCESS_KEY_ID` - your AWS access key.
@@ -32,9 +32,29 @@ All configuration is done via environment variables. All of the configuration va
 * `S3_BUCKET` - the bucket you wish to use for LFS storage. While not required, I recommend using a dedicated bucket for this.
 * `LFS_SERVER_URL` - the URL where this server can be reached; needed to fetch download URLs.
 
+You can (and should) also set authentication information. When you push for the first time from git, you will be prompted to enter a username and password when authentication is enabled. You can configure these with environment variables as well.
+
+* `USERNAME` - the login username.
+* `PASSWORD` - the login password.
+
 ### Bundled
 
-If you are bundling the server inside of another application, such as Rails, you can set the configuration directly on `GitLfsS3::Application`. See [bin/git-lfs-s3](https://github.com/meltingice/git-lfs-s3/blob/master/bin/git-lfs-s3) for an example.
+If you are bundling the service inside of another application, such as Rails, or a different server of your choosing, you can set the configuration directly on `GitLfsS3::Application`. See [bin/git-lfs-s3](https://github.com/meltingice/git-lfs-s3/blob/master/bin/git-lfs-s3) for an example.
+
+You can also hook the authentication into your own service this way. For example:
+
+``` ruby
+GitLfsS3::Application.on_authenticate do |username, password|
+  user = User.find(username: username)
+  user.verify_password(password)
+end
+```
+
+The logger can be configured as well. This is especially handy if you want to hook it into your Rails logger:
+
+``` ruby
+GitLfsS3::Application.set :logger, Rails.logger
+```
 
 ### Git Setup
 

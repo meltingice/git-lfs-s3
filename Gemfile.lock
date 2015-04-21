@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    git-lfs-s3 (0.0.1)
+    git-lfs-s3 (0.1.0)
       aws-sdk (~> 2)
       multi_json
       sinatra

@@ -21,7 +21,7 @@ module GitLfsS3
       private
 
       def server_url
-        ENV['LFS_SERVER_URL']
+        GitLfsS3::Application.settings.server_url
       end
     end
   end

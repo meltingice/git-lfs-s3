@@ -1,10 +1,3 @@
-require 'logger'
-require 'sinatra/base'
-require 'aws-sdk'
-require 'multi_json'
-
-Dir['./lib/**/*.rb'].each { |f| require f }
-
 module GitLfsS3
   class Application < Sinatra::Application
     include AwsHelpers
@@ -28,10 +21,6 @@ module GitLfsS3
       end
     end
 
-    def server_url
-      ENV['LFS_SERVER_URL']
-    end
-
     # before do
     #   raise headers['Accept'].inspect
     #   if headers['Accept'] != 'application/vnd.git-lfs+json'
@@ -49,7 +38,7 @@ module GitLfsS3
           'size' => object.size,
           '_links' => {
             'self' => {
-              'href' => File.join(server_url, 'objects', params[:oid])
+              'href' => File.join(settings.server_url, 'objects', params[:oid])
             },
             'download' => {
               # TODO: cloudfront support
@@ -66,6 +55,7 @@ module GitLfsS3
     end
 
     post "/objects", provides: 'application/vnd.git-lfs+json' do
+      logger.debug headers.inspect
       service = UploadService.service_for(request.body)
       logger.debug service.response
       logger.debug service.to_curl

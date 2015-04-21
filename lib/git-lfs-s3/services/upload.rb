@@ -1,3 +1,7 @@
+require "git-lfs-s3/services/upload/base"
+require "git-lfs-s3/services/upload/object_exists"
+require "git-lfs-s3/services/upload/upload_required"
+
 module GitLfsS3
   module UploadService
     extend self

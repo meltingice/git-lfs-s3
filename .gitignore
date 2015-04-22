@@ -2,3 +2,4 @@
 .DS_Store
 logs
 pkg
+Gemfile.lock

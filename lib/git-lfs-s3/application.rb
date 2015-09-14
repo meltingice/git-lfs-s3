@@ -13,8 +13,8 @@ module GitLfsS3
         !auth_callback.nil?
       end
 
-      def perform_authentication(username, password)
-        auth_callback.call(username, password)
+      def perform_authentication(username, password, is_safe)
+        auth_callback.call(username, password, is_safe)
       end
     end
 
@@ -31,8 +31,9 @@ module GitLfsS3
 
     def authorized?
       @auth ||=  Rack::Auth::Basic::Request.new(request.env)
+      logger.debug request.safe?
       @auth.provided? && @auth.basic? && @auth.credentials && self.class.auth_callback.call(
-        @auth.credentials[0], @auth.credentials[1]
+        @auth.credentials[0], @auth.credentials[1], request.safe?
       )
     end
 

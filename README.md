@@ -42,9 +42,13 @@ If you are bundling the service inside of another application, such as Rails, or
 You can also hook the authentication into your own service this way. For example:
 
 ``` ruby
-GitLfsS3::Application.on_authenticate do |username, password|
-  user = User.find(username: username)
-  user.verify_password(password)
+GitLfsS3::Application.on_authenticate do |username, password, is_safe|
+  if is_safe
+    true
+  else
+    user = User.find(username: username)
+    user.verify_password(password)
+  end
 end
 ```
 

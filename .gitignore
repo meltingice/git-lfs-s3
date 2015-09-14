@@ -1,5 +1,7 @@
+.bundle
 .env
 .DS_Store
 logs
 pkg
 Gemfile.lock
+vendor

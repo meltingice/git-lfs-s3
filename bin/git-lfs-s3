@@ -11,8 +11,12 @@ GitLfsS3::Application.set :s3_bucket, ENV['S3_BUCKET']
 GitLfsS3::Application.set :server_url, ENV['LFS_SERVER_URL']
 GitLfsS3::Application.set :logger, Logger.new(STDOUT)
 
-GitLfsS3::Application.on_authenticate do |username, password|
-  username == ENV['USERNAME'] && password == ENV['PASSWORD']
+GitLfsS3::Application.on_authenticate do |username, password, is_safe|
+  if is_safe # Whether the HTTP method is safe (GET, HEAD)
+    true
+  else
+    username == ENV['USERNAME'] && password == ENV['PASSWORD']
+  end
 end
 
 Rack::Handler::WEBrick.run(

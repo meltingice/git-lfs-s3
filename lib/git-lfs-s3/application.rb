@@ -36,16 +36,7 @@ module GitLfsS3
         @auth.credentials[0], @auth.credentials[1], request.safe?
       )
     end
-
-    def protected!
-      unless authorized?
-        response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
-        throw(:halt, [401, "Invalid username or password"])
-      end
-    end
-
-    before { protected! }
-
+    
     get '/' do
       "Git LFS S3 is online."
     end
@@ -74,6 +65,18 @@ module GitLfsS3
         status 404
         body MultiJson.dump({message: 'Object not found'})
       end
+    end
+    
+    def protected!
+      unless authorized?
+        response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+        throw(:halt, [401, "Invalid username or password"])
+      end
+    end
+
+    before do
+      pass if request.safe?
+      protected!
     end
 
     post "/objects", provides: 'application/vnd.git-lfs+json' do

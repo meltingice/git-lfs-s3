@@ -31,7 +31,6 @@ module GitLfsS3
 
     def authorized?
       @auth ||=  Rack::Auth::Basic::Request.new(request.env)
-      logger.debug request.safe?
       @auth.provided? && @auth.basic? && @auth.credentials && self.class.auth_callback.call(
         @auth.credentials[0], @auth.credentials[1], request.safe?
       )

@@ -75,7 +75,7 @@ module GitLfsS3
     end
 
     before do
-      pass if request.safe?
+      pass if request.safe? and settings.public_server
       protected!
     end
 

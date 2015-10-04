@@ -1,4 +1,5 @@
 require 'base64'
+require 'date'
 require 'digest/sha1'
 require 'openssl'
 require 'uri'
@@ -14,10 +15,10 @@ module GitLfsS3
       access_key_id = Aws.config[:access_key_id]
       endpoint = Aws.config[:endpoint]
       digest = OpenSSL::Digest.new('sha1')
-      can_string = "PUT\n\n\n#{expire_date}\n/#{obj.bucket_name}/#{obj.key}"
+      can_string = "PUT\n\napplication/octet-stream\n#{expire_at}\n/#{obj.bucket_name}/#{obj.key}"
       hmac = OpenSSL::HMAC.digest(digest, secret_access_key, can_string)
       signature = URI.escape(Base64.encode64(hmac).strip, /[\+=?@$&,\/:;\?]/)
-      "#{endpoint}/#{obj.bucket_name}/#{obj.key}?Signature=#{signature}&AWSAccessKeyId=#{access_key_id}&Expires=#{expire_date}"
+      "#{endpoint}/#{obj.bucket_name}/#{obj.key}?Signature=#{signature}&AWSAccessKeyId=#{access_key_id}&Expires=#{expire_at}"
     end
   end
 end

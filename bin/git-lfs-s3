@@ -16,12 +16,16 @@ GitLfsS3::Application.on_authenticate do |username, password|
 end
 
 cert_name = [
-  %w[CN localhost],
+  ["CN", ENV['LFS_CERT_NAME']]
 ]
+
+server_options = {
+  Port: ENV['PORT'] || 8080,
+  SSLEnable: ENV['LFS_USE_SSL'] == 'true' || ENV['LFS_USE_SSL'] == '1',
+  SSLCertName: cert_name
+}
 
 Rack::Handler::WEBrick.run(
   GitLfsS3::Application.new,
-  Port: ENV['PORT'] || 8080,
-  SSLEnable: true,
-  SSLCertName: cert_name
+  server_options
 )

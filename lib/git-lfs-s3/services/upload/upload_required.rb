@@ -1,3 +1,5 @@
+require "git-lfs-s3/services/ceph_presigner"
+
 module GitLfsS3
   module UploadService
     class UploadRequired < Base
@@ -26,7 +28,11 @@ module GitLfsS3
       private
 
       def upload_destination
-        object.presigned_url(:put)
+        if ceph_s3
+          GitLfsS3::CephPresignerService::signed_url(object)
+        else
+          object.presigned_url(:put)
+        end
       end
 
       def upload_headers

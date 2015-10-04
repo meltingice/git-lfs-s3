@@ -10,6 +10,7 @@ GitLfsS3::Application.set :aws_secret_access_key, ENV['AWS_SECRET_ACCESS_KEY']
 GitLfsS3::Application.set :s3_bucket, ENV['S3_BUCKET']
 GitLfsS3::Application.set :server_url, ENV['LFS_SERVER_URL']
 GitLfsS3::Application.set :public_server, (ENV['LFS_PUBLIC_SERVER'] == 'true')
+GitLfsS3::Application.set :ceph_s3, (ENV['LFS_CEPH_S3'] == 'true')
 GitLfsS3::Application.set :logger, Logger.new(STDOUT)
 
 GitLfsS3::Application.on_authenticate do |username, password, is_safe|

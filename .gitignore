@@ -3,3 +3,4 @@
 logs
 pkg
 Gemfile.lock
+launch-test.sh

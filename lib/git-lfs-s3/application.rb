@@ -73,6 +73,13 @@ module GitLfsS3
       end
     end
 
+    def public_read_grant
+      grantee = Aws::S3::Types::Grantee.new(
+        display_name: nil, email_address: nil, id: nil, type: nil,
+        uri: "http://acs.amazonaws.com/groups/global/AllUsers")
+      Aws::S3::Types::Grant.new(grantee: grantee, permission: "READ")
+    end
+
     before do
       pass if request.safe? and settings.public_server
       protected!
@@ -86,12 +93,12 @@ module GitLfsS3
       status service.status
       body MultiJson.dump(service.response)
     end
-
+    
     post '/verify', provides: 'application/vnd.git-lfs+json' do
       data = MultiJson.load(request.body.tap { |b| b.rewind }.read)
       object = object_data(data['oid'])
       if settings.public_server and settings.ceph_s3
-        if object.exists?
+        if object.exists? and not object.acl.grants.include?(public_read_grant)
           object.acl.put(acl: "public-read")
         end
       end

@@ -91,7 +91,9 @@ module GitLfsS3
       data = MultiJson.load(request.body.tap { |b| b.rewind }.read)
       object = object_data(data['oid'])
       if settings.public_server and settings.ceph_s3
-        object.acl.put(acl: "public-read")
+        if object.exists?
+          object.acl.put(acl: "public-read")
+        end
       end
       if object.exists? && object.size == data['size']
         status 200

@@ -97,15 +97,16 @@ module GitLfsS3
     post '/verify', provides: 'application/vnd.git-lfs+json' do
       data = MultiJson.load(request.body.tap { |b| b.rewind }.read)
       object = object_data(data['oid'])
+      if not object.exists?
+        status 404
+      end
       if settings.public_server and settings.ceph_s3
-        if object.exists? and not object.acl.grants.include?(public_read_grant)
+        if object.acl.grants.include?(public_read_grant)
           object.acl.put(acl: "public-read")
         end
       end
-      if object.exists? && object.size == data['size']
+      if object.size == data['size']
         status 200
-      else
-        status 404
       end
     end
   end

@@ -4,8 +4,3 @@
 logs
 pkg
 Gemfile.lock
-vendor
-
-# Emacs
-#*#
-*~

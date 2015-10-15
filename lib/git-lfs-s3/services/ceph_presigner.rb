@@ -8,12 +8,12 @@ module GitLfsS3
   module CephPresignerService
     extend self
     extend AwsHelpers
-
+    
     def signed_url(obj)
       expire_at = (DateTime.now + 1).strftime("%s")
-      secret_access_key = Aws.config[:secret_access_key]
-      access_key_id = Aws.config[:access_key_id]
-      endpoint = Aws.config[:endpoint]
+      secret_access_key = GitLfsS3::Application.settings.aws_secret_access_key
+      access_key_id = GitLfsS3::Application.settings.aws_access_key_id
+      endpoint = GitLfsS3::Application.settings.endpoint
       digest = OpenSSL::Digest.new('sha1')
       can_string = "PUT\n\napplication/octet-stream\n#{expire_at}\n/#{obj.bucket_name}/#{obj.key}"
       hmac = OpenSSL::HMAC.digest(digest, secret_access_key, can_string)

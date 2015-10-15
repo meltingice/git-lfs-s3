@@ -35,7 +35,14 @@ module GitLfsS3
         @auth.credentials[0], @auth.credentials[1], request.safe?
       )
     end
-    
+
+    def protected!
+      unless authorized?
+        response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+        throw(:halt, [401, "Invalid username or password"])
+      end
+    end
+
     get '/' do
       "Git LFS S3 is online."
     end
@@ -65,13 +72,6 @@ module GitLfsS3
         body MultiJson.dump({message: 'Object not found'})
       end
     end
-    
-    def protected!
-      unless authorized?
-        response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
-        throw(:halt, [401, "Invalid username or password"])
-      end
-    end
 
     def public_read_grant
       grantee = Aws::S3::Types::Grantee.new(
@@ -93,7 +93,7 @@ module GitLfsS3
       status service.status
       body MultiJson.dump(service.response)
     end
-    
+
     post '/verify', provides: 'application/vnd.git-lfs+json' do
       data = MultiJson.load(request.body.tap { |b| b.rewind }.read)
       object = object_data(data['oid'])

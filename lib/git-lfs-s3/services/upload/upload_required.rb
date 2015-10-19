@@ -31,7 +31,11 @@ module GitLfsS3
         if ceph_s3
           GitLfsS3::CephPresignerService::signed_url(object)
         else
-          object.presigned_url(:put)
+          if GitLfsS3::Application.settings.public_server
+            object.presigned_url(:put, acl: 'public-read')
+          else
+            object.presigned_url(:put)
+          end
         end
       end
 

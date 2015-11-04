@@ -101,7 +101,7 @@ module GitLfsS3
         status 404
       end
       if settings.public_server and settings.ceph_s3
-        if object.acl.grants.include?(public_read_grant)
+        if not object.acl.grants.include?(public_read_grant)
           object.acl.put(acl: "public-read")
         end
       end

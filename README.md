@@ -1,4 +1,4 @@
-# Git LFS S3
+# LSST's Git LFS S3
 
 A [Git LFS](https://git-lfs.github.com/) server that stores your large Git files on S3.
 
@@ -9,7 +9,7 @@ It works by generating a presigned URL that the Git LFS client can use to upload
 Git LFS S3 is available on RubyGems.
 
 ``` bash
-gem install git-lfs-s3
+gem install lsst-git-lfs-s3
 ```
 
 Or add it to your Gemfile if you wish to bundle it as a part of another application.

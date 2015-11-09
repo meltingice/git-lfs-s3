@@ -4,13 +4,13 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'git-lfs-s3/version'
 
 Gem::Specification.new do |gem|
-  gem.name          = "lsst-git-lfs-s3"
+  gem.name          = "git-lfs-s3"
   gem.version       = GitLfsS3::VERSION
   gem.authors       = ["Ryan LeFevre", "J. Matt Peterson"]
   gem.email         = ["meltingice8917@gmail.com", "jmatt@lsst.org"]
-  gem.description   = %q{LSST's Git LFS server that uses S3 for the storage backend.}
-  gem.summary       = %q{LSST's Git LFS server that uses S3 for the storage backend by providing presigned S3 URLs.}
-  gem.homepage      = "https://github.com/lsst-sqre/git-lfs-s3"
+  gem.description   = %q{A Git LFS server that uses S3 for the storage backend.}
+  gem.summary       = %q{A Git LFS server that uses S3 for the storage backend by providing presigned S3 URLs.}
+  gem.homepage      = "https://github.com/meltingice/git-lfs-s3"
   gem.license       = 'MIT'
 
   gem.files         = `git ls-files`.split($/)

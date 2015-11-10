@@ -23,6 +23,10 @@ module GitLfsS3
       def server_url
         GitLfsS3::Application.settings.server_url
       end
+
+      def ceph_s3
+        GitLfsS3::Application.settings.ceph_s3
+      end
     end
   end
 end

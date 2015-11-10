@@ -29,6 +29,9 @@ All configuration is done via environment variables. All of these configuration 
 * `AWS_SECRET_ACCESS_KEY` - your AWS secret key.
 * `S3_BUCKET` - the bucket you wish to use for LFS storage. While not required, I recommend using a dedicated bucket for this.
 * `LFS_SERVER_URL` - the URL where this server can be reached; needed to fetch download URLs.
+* `LFS_PUBLIC_SERVER` - (Optional) Support anonymous users for safe operations such as git-clone and git-pull.
+* `LFS_CEPH_S3` - (Optional) support [Ceph S3](http://ceph.com/) (Hammer version, through radosgw).
+* `LFS_CEPH_ENDPOINT` - (Optional) the Ceph S3 endpoint URL. Required when using `LFS_CEPH_S3`.
 
 You can (and should) also set authentication information. When you push for the first time from git, you will be prompted to enter a username and password when authentication is enabled. You can configure these with environment variables as well.
 
@@ -42,9 +45,13 @@ If you are bundling the service inside of another application, such as Rails, or
 You can also hook the authentication into your own service this way. For example:
 
 ``` ruby
-GitLfsS3::Application.on_authenticate do |username, password|
-  user = User.find(username: username)
-  user.verify_password(password)
+GitLfsS3::Application.on_authenticate do |username, password, is_safe|
+  if is_safe
+    true
+  else
+    user = User.find(username: username)
+    user.verify_password(password)
+  end
 end
 ```
 
@@ -61,6 +68,7 @@ If you are new to Git LFS, make sure you read the [Getting Started](https://git-
 ``` git
 [lfs]
     url = "http://yourserver.com"
+    batch = false
 ```
 
 Once that is done, you can tell Git LFS to track files with `git lfs track "*.psd"`, for example.
@@ -79,6 +87,19 @@ However, because this is a Sinatra application, it can also be mounted within ot
 mount GitLfsS3::Application => '/lfs'
 ```
 
+
+
+Allow anonymous clones and pulls of the git-lfs git repository.
+
+## Ceph S3 Server
+
+Through the `LFS_CEPH_S3` and `LFS_CEPH_ENDPOINT` environment variables use a Ceph S3 storage service (Hammer version, through radosgw) instead of AWS S3.
+
+## More Complex Server Example
+
+* https://github.com/lsst-sqre/git-lfs-s3-server
+
 ## TODO
 
-* Cloudfront support
+* Cloudfront support.
+* Batch API support.

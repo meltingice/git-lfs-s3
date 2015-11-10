@@ -13,8 +13,8 @@ module GitLfsS3
         !auth_callback.nil?
       end
 
-      def perform_authentication(username, password)
-        auth_callback.call(username, password)
+      def perform_authentication(username, password, is_safe)
+        auth_callback.call(username, password, is_safe)
       end
     end
 
@@ -32,7 +32,7 @@ module GitLfsS3
     def authorized?
       @auth ||=  Rack::Auth::Basic::Request.new(request.env)
       @auth.provided? && @auth.basic? && @auth.credentials && self.class.auth_callback.call(
-        @auth.credentials[0], @auth.credentials[1]
+        @auth.credentials[0], @auth.credentials[1], request.safe?
       )
     end
 
@@ -42,8 +42,6 @@ module GitLfsS3
         throw(:halt, [401, "Invalid username or password"])
       end
     end
-
-    before { protected! }
 
     get '/' do
       "Git LFS S3 is online."
@@ -75,6 +73,18 @@ module GitLfsS3
       end
     end
 
+    def public_read_grant
+      grantee = Aws::S3::Types::Grantee.new(
+        display_name: nil, email_address: nil, id: nil, type: nil,
+        uri: "http://acs.amazonaws.com/groups/global/AllUsers")
+      Aws::S3::Types::Grant.new(grantee: grantee, permission: "READ")
+    end
+
+    before do
+      pass if request.safe? and settings.public_server
+      protected!
+    end
+
     post "/objects", provides: 'application/vnd.git-lfs+json' do
       logger.debug headers.inspect
       service = UploadService.service_for(request.body)
@@ -87,11 +97,16 @@ module GitLfsS3
     post '/verify', provides: 'application/vnd.git-lfs+json' do
       data = MultiJson.load(request.body.tap { |b| b.rewind }.read)
       object = object_data(data['oid'])
-
-      if object.exists? && object.size == data['size']
-        status 200
-      else
+      if not object.exists?
         status 404
+      end
+      if settings.public_server and settings.ceph_s3
+        if not object.acl.grants.include?(public_read_grant)
+          object.acl.put(acl: "public-read")
+        end
+      end
+      if object.size == data['size']
+        status 200
       end
     end
   end

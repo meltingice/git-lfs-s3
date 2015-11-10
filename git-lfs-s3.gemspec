@@ -6,8 +6,8 @@ require 'git-lfs-s3/version'
 Gem::Specification.new do |gem|
   gem.name          = "git-lfs-s3"
   gem.version       = GitLfsS3::VERSION
-  gem.authors       = ["Ryan LeFevre"]
-  gem.email         = ["meltingice8917@gmail.com"]
+  gem.authors       = ["Ryan LeFevre", "J. Matt Peterson"]
+  gem.email         = ["meltingice8917@gmail.com", "jmatt@lsst.org"]
   gem.description   = %q{A Git LFS server that uses S3 for the storage backend.}
   gem.summary       = %q{A Git LFS server that uses S3 for the storage backend by providing presigned S3 URLs.}
   gem.homepage      = "https://github.com/meltingice/git-lfs-s3"
@@ -19,8 +19,8 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
 
   gem.add_dependency 'aws-sdk', '~> 2'
-  gem.add_dependency 'sinatra'
-  gem.add_dependency 'multi_json'
+  gem.add_dependency 'sinatra', '~> 1'
+  gem.add_dependency 'multi_json', '~> 1'
 
-  gem.add_development_dependency 'rake'
+  gem.add_development_dependency 'rake', '~> 10'
 end
